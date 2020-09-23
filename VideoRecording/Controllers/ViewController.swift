@@ -22,6 +22,7 @@ class ViewController: UIViewController {
             tableView.delegate = self
             tableView.dataSource = self
             tableView.tableFooterView = UIView()
+            tableView.addSubview(refreshControl)
             tableView.register(UINib(nibName: "VideoCell", bundle: nil), forCellReuseIdentifier: "VideoCell")
         }
     }
@@ -31,6 +32,15 @@ class ViewController: UIViewController {
             oltRecord.layer.cornerRadius = 10
         }
     }
+    
+    lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action:
+            #selector(refreshTableView),
+                                 for: .valueChanged)
+        refreshControl.tintColor = .red
+        return refreshControl
+    }()
     
     let picker = UIImagePickerController()
     var assetsFetchResult = PHFetchResult<PHAsset>()
@@ -57,6 +67,17 @@ class ViewController: UIViewController {
         super.viewWillAppear(animated)
         let status = PHPhotoLibrary.authorizationStatus()
         self.fetchCustomAlbumPhotos()
+        if status == .notDetermined  {
+            PHPhotoLibrary.requestAuthorization({status in
+                if status == .authorized {
+                    self.fetchCustomAlbumPhotos()
+                }
+            })
+        }
+    }
+    
+    @objc func refreshTableView() {
+        let status = PHPhotoLibrary.authorizationStatus()
         if status == .notDetermined  {
             PHPhotoLibrary.requestAuthorization({status in
                 if status == .authorized {
@@ -168,7 +189,6 @@ class ViewController: UIViewController {
     
     @IBAction func actionRecord(_ sender: UIButton) {
         VideoHelper.startMediaBrowser(delegate: self, sourceType: .camera)
-//        print(assetsArray)
     }
 }
 

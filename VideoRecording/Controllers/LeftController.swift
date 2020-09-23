@@ -31,7 +31,7 @@ class LeftController: UIViewController, leftMenuProtocol {
     
     var viewSettings: UIViewController!
     var viewHome: UIViewController!
-    var dataArray = ["Home", "Settings option"]
+    var dataArray = ["Home", "Settings"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
